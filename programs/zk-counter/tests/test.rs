@@ -20,13 +20,13 @@ use solana_sdk::instruction::Instruction;
 use solana_sdk::pubkey::Pubkey;
 use solana_sdk::signature::{Keypair, Signer};
 use solana_sdk::transaction::Transaction;
-use zk_session::CounterCompressedAccount;
+use zk_counter::CounterCompressedAccount;
 
 #[tokio::test]
 async fn test() {
     let (mut rpc, env) = setup_test_programs_with_accounts_v2(Some(vec![(
-        String::from("zk_session"),
-        zk_session::ID,
+        String::from("zk_counter"),
+        zk_counter::ID,
     )]))
     .await;
     let payer = rpc.get_payer().insecure_clone();
@@ -62,7 +62,7 @@ async fn test() {
     };
     let address_seed = derive_address_seed(
         &[b"counter", payer.pubkey().as_ref()],
-        &zk_session::ID,
+        &zk_counter::ID,
         &address_merkle_context,
     );
 
@@ -85,7 +85,7 @@ async fn test() {
     .unwrap();
 
     // Check that it was created correctly.
-    let compressed_accounts = test_indexer.get_compressed_accounts_by_owner(&zk_session::ID);
+    let compressed_accounts = test_indexer.get_compressed_accounts_by_owner(&zk_counter::ID);
     assert_eq!(compressed_accounts.len(), 1);
     let compressed_account = &compressed_accounts[0];
     let counter_account = &compressed_account
@@ -109,30 +109,30 @@ async fn test() {
     .await
     .unwrap();
 
-    // // Check that it was updated correctly.
-    // let compressed_accounts = test_indexer.get_compressed_accounts_by_owner(&zk_session::ID);
-    // assert_eq!(compressed_accounts.len(), 1);
-    // let compressed_account = &compressed_accounts[0];
-    // let counter_account = &compressed_account
-    //     .compressed_account
-    //     .data
-    //     .as_ref()
-    //     .unwrap()
-    //     .data;
-    // let counter_account = CounterCompressedAccount::deserialize(&mut &counter_account[..]).unwrap();
-    // assert_eq!(counter_account.owner, payer.pubkey());
-    // assert_eq!(counter_account.counter, 1);
+    // Check that it was updated correctly.
+    let compressed_accounts = test_indexer.get_compressed_accounts_by_owner(&zk_counter::ID);
+    assert_eq!(compressed_accounts.len(), 1);
+    let compressed_account = &compressed_accounts[0];
+    let counter_account = &compressed_account
+        .compressed_account
+        .data
+        .as_ref()
+        .unwrap()
+        .data;
+    let counter_account = CounterCompressedAccount::deserialize(&mut &counter_account[..]).unwrap();
+    assert_eq!(counter_account.owner, payer.pubkey());
+    assert_eq!(counter_account.counter, 1);
 
-    // delete_account(
-    //     &mut rpc,
-    //     &mut test_indexer,
-    //     &mut remaining_accounts,
-    //     &payer,
-    //     compressed_account,
-    //     &address_merkle_context,
-    // )
-    // .await
-    // .unwrap();
+    delete_account(
+        &mut rpc,
+        &mut test_indexer,
+        &mut remaining_accounts,
+        &payer,
+        compressed_account,
+        &address_merkle_context,
+    )
+    .await
+    .unwrap();
 }
 
 async fn create_account<R>(
@@ -164,7 +164,7 @@ where
         )
         .await;
 
-    let instruction_data = zk_session::instruction::Create {
+    let instruction_data = zk_counter::instruction::Create {
         inputs: Vec::new(),
         proof: rpc_result.proof,
         merkle_context: *merkle_context,
@@ -173,16 +173,16 @@ where
         address_merkle_tree_root_index: rpc_result.address_root_indices[0],
     };
 
-    let cpi_signer = find_cpi_signer(&zk_session::ID);
+    let cpi_signer = find_cpi_signer(&zk_counter::ID);
 
-    let accounts = zk_session::accounts::Create {
+    let accounts = zk_counter::accounts::Create {
         signer: payer.pubkey(),
         light_system_program: PROGRAM_ID_LIGHT_SYSTEM,
         account_compression_program: PROGRAM_ID_ACCOUNT_COMPRESSION,
         account_compression_authority,
         registered_program_pda,
         noop_program: PROGRAM_ID_NOOP,
-        self_program: zk_session::ID,
+        self_program: zk_counter::ID,
         cpi_signer,
         system_program: solana_sdk::system_program::id(),
     };
@@ -190,7 +190,7 @@ where
     let remaining_accounts = remaining_accounts.to_account_metas();
 
     let instruction = Instruction {
-        program_id: zk_session::ID,
+        program_id: zk_counter::ID,
         accounts: [accounts.to_account_metas(Some(true)), remaining_accounts].concat(),
         data: instruction_data.data(),
     };
@@ -243,7 +243,7 @@ where
             .data,
     ];
 
-    let instruction_data = zk_session::instruction::Increment {
+    let instruction_data = zk_counter::instruction::Increment {
         inputs,
         proof: rpc_result.proof,
         merkle_context,
@@ -252,16 +252,16 @@ where
         address_merkle_tree_root_index: 0,
     };
 
-    let cpi_signer = find_cpi_signer(&zk_session::ID);
+    let cpi_signer = find_cpi_signer(&zk_counter::ID);
 
-    let accounts = zk_session::accounts::Increment {
+    let accounts = zk_counter::accounts::Increment {
         signer: payer.pubkey(),
         light_system_program: PROGRAM_ID_LIGHT_SYSTEM,
         account_compression_program: PROGRAM_ID_ACCOUNT_COMPRESSION,
         account_compression_authority,
         registered_program_pda,
         noop_program: PROGRAM_ID_NOOP,
-        self_program: zk_session::ID,
+        self_program: zk_counter::ID,
         cpi_signer,
         system_program: solana_sdk::system_program::id(),
     };
@@ -269,7 +269,7 @@ where
     let remaining_accounts = remaining_accounts.to_account_metas();
 
     let instruction = Instruction {
-        program_id: zk_session::ID,
+        program_id: zk_counter::ID,
         accounts: [accounts.to_account_metas(Some(true)), remaining_accounts].concat(),
         data: instruction_data.data(),
     };
@@ -322,7 +322,7 @@ where
             .data,
     ];
 
-    let instruction_data = zk_session::instruction::Delete {
+    let instruction_data = zk_counter::instruction::Delete {
         inputs,
         proof: rpc_result.proof,
         merkle_context,
@@ -331,16 +331,16 @@ where
         address_merkle_tree_root_index: 0,
     };
 
-    let cpi_signer = find_cpi_signer(&zk_session::ID);
+    let cpi_signer = find_cpi_signer(&zk_counter::ID);
 
-    let accounts = zk_session::accounts::Delete {
+    let accounts = zk_counter::accounts::Delete {
         signer: payer.pubkey(),
         light_system_program: PROGRAM_ID_LIGHT_SYSTEM,
         account_compression_program: PROGRAM_ID_ACCOUNT_COMPRESSION,
         account_compression_authority,
         registered_program_pda,
         noop_program: PROGRAM_ID_NOOP,
-        self_program: zk_session::ID,
+        self_program: zk_counter::ID,
         cpi_signer,
         system_program: solana_sdk::system_program::id(),
     };
@@ -348,7 +348,7 @@ where
     let remaining_accounts = remaining_accounts.to_account_metas();
 
     let instruction = Instruction {
-        program_id: zk_session::ID,
+        program_id: zk_counter::ID,
         accounts: [accounts.to_account_metas(Some(true)), remaining_accounts].concat(),
         data: instruction_data.data(),
     };

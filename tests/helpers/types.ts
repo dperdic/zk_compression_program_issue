@@ -1,10 +1,10 @@
 import { DecodeType, IdlTypes } from "@coral-xyz/anchor";
 import { IdlType } from "@coral-xyz/anchor/dist/cjs/idl";
-import { ZkSession, IDL } from "../../target/types/zk_session";
+import { ZkCounter, IDL } from "../../target/types/zk_counter";
 
-export type ZkSessionStruct<
+export type ZkCounterStruct<
   Name extends string,
-  Program = ZkSession
+  Program = ZkCounter
 > = UnionToIntersection<ArgsType<ProgramInstruction<Name, Program>>>;
 
 type ProgramInstruction<Name extends string, Program> = InstructionTypeByName<

@@ -4,11 +4,11 @@ use light_sdk::{
     merkle_context::PackedAddressMerkleContext,
 };
 
-declare_id!("ewoep2TyiqHw7kJF2RzN9zPYLMX48ABoe3Mq5AGQhdf");
+declare_id!("5htpoFRN9f8QxeJ68MFNbJ9u23cYSDjoShzbwPbwwtVX");
 
 #[light_program]
 #[program]
-pub mod zk_session {
+pub mod zk_counter {
     use super::*;
 
     pub fn create<'info>(ctx: LightContext<'_, '_, '_, 'info, Create<'info>>) -> Result<()> {
@@ -49,7 +49,7 @@ pub struct Create<'info> {
     #[fee_payer]
     pub signer: Signer<'info>,
     #[self_program]
-    pub self_program: Program<'info, crate::program::ZkSession>,
+    pub self_program: Program<'info, crate::program::ZkCounter>,
     /// CHECK: Checked in light-system-program.
     #[authority]
     pub cpi_signer: AccountInfo<'info>,
@@ -63,7 +63,7 @@ pub struct Increment<'info> {
     #[fee_payer]
     pub signer: Signer<'info>,
     #[self_program]
-    pub self_program: Program<'info, crate::program::ZkSession>,
+    pub self_program: Program<'info, crate::program::ZkCounter>,
     /// CHECK: Checked in light-system-program.
     #[authority]
     pub cpi_signer: AccountInfo<'info>,
@@ -82,7 +82,7 @@ pub struct Delete<'info> {
     #[fee_payer]
     pub signer: Signer<'info>,
     #[self_program]
-    pub self_program: Program<'info, crate::program::ZkSession>,
+    pub self_program: Program<'info, crate::program::ZkCounter>,
     /// CHECK: Checked in light-system-program.
     #[authority]
     pub cpi_signer: AccountInfo<'info>,

@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { ZkSession } from "../target/types/zk_session";
+import { ZkCounter } from "../target/types/zk_counter";
 import {
   LightSystemProgram,
   NewAddressParams,
@@ -19,7 +19,7 @@ import {
   Keypair,
   PublicKey,
 } from "@solana/web3.js";
-import { ZkSessionStruct } from "./helpers/types";
+import { ZkCounterStruct } from "./helpers/types";
 import {
   buildSignAndSendTransaction,
   deriveAddressSeed,
@@ -40,13 +40,13 @@ const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
   microLamports: 1,
 });
 
-describe("ZkSession", () => {
+describe("ZkCounter", () => {
   // Configure the client to use the local cluster.
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(anchor.AnchorProvider.env());
 
-  const program = anchor.workspace.ZkSession as Program<ZkSession>;
-  const deployer = anchor.workspace.zk_session.provider.wallet.payer as Keypair;
+  const program = anchor.workspace.ZkCounter as Program<ZkCounter>;
+  const deployer = anchor.workspace.zk_counter.provider.wallet.payer as Keypair;
 
   const rpcUrl = process.env.RPC_URL;
   const connection: Rpc = createRpc(rpcUrl, rpcUrl, rpcUrl, {
@@ -68,7 +68,7 @@ describe("ZkSession", () => {
   let addressMerkleTreeRootIndex: number;
   let remainingAccounts: AccountMeta[];
 
-  it("Is truly initialized", async () => {
+  it("Should create a new account", async () => {
     const tempPayer = (provider.wallet as any).payer.publicKey;
     const addressSeed = deriveAddressSeed(
       [Buffer.from("counter"), tempPayer.toBuffer()],
@@ -96,7 +96,7 @@ describe("ZkSession", () => {
       addressMerkleTreeRootIndex,
     } = packNew(outputCompressedAccounts, [newAddressParams], proof));
 
-    const parameters: ZkSessionStruct<"create"> = {
+    const parameters: ZkCounterStruct<"create"> = {
       inputs: [],
       proof: proof.compressedProof,
       merkleContext,
@@ -132,7 +132,7 @@ describe("ZkSession", () => {
     console.log("Your transaction signature", txSignature);
   });
 
-  it("Check if the session is initialized", async () => {
+  it("Check if the account is created", async () => {
     const accounts = await connection.getCompressedAccountsByOwner(
       program.programId
     );
@@ -165,7 +165,7 @@ describe("ZkSession", () => {
       undefined
     );
 
-    const parameters: ZkSessionStruct<"increment"> = {
+    const parameters: ZkCounterStruct<"increment"> = {
       inputs: [compressedAccount.data.data],
       proof: proof.compressedProof,
       merkleContext: merkleContext,
