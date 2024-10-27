@@ -3,12 +3,12 @@
   "scripts": {
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
-    "test:integration": "cargo test-sbf -- --nocapture",
-    "test:unit": "anchor test",
+    "test:tokio": "cargo test-sbf -- --nocapture",
+    "test:ts": "anchor test",
     "depl": "anchor deploy --provider.cluster http://localhost:8899",
-    "test:unit:no-setup": "anchor test --provider.cluster http://localhost:8899 --skip-deploy --skip-local-validator --skip-build",
+    "test:ts:no-setup": "anchor test --provider.cluster http://localhost:8899 --skip-deploy --skip-local-validator --skip-build",
     "lightv": "light test-validator",
-    "test:unit:full-setup": "yarn lightv && yarn depl && yarn test:unit:no-setup"
+    "test:ts:full-setup": "yarn lightv && yarn depl && yarn test:ts:no-setup"
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.29.0",

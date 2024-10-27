@@ -15,6 +15,12 @@ import {
   sendAndConfirmTx,
 } from "@lightprotocol/stateless.js";
 
+/**
+ * Hashes an array of byte arrays using Keccak-256 and returns the result as a Uint8Array.
+ * The first byte of the result is set to 0 to ensure it fits within the BN254 field size.
+ * @param {Uint8Array[]} bytes - Array of byte arrays to be hashed
+ * @returns {Uint8Array} The resulting hash as a Uint8Array
+ */
 export const hashvToBn254FieldSizeBe = (bytes: Uint8Array[]): Uint8Array => {
   const hasher = keccak_256.create();
   for (const input of bytes) {
@@ -25,6 +31,13 @@ export const hashvToBn254FieldSizeBe = (bytes: Uint8Array[]): Uint8Array => {
   return hash;
 };
 
+/**
+ * Derives an address seed from given seeds, program ID, and address merkle tree.
+ * @param {Uint8Array[]} seeds - Array of seed byte arrays
+ * @param {PublicKey} programId - The program ID
+ * @param {PublicKey} address_merkle_tree - The address merkle tree public key
+ * @returns {Uint8Array} The derived address seed
+ */
 export const deriveAddressSeed = (
   seeds: Uint8Array[],
   programId: PublicKey,
@@ -40,12 +53,21 @@ export const deriveAddressSeed = (
   return hash;
 };
 
+/**
+ * Packs compressed accounts with input, output, and new address parameters.
+ * @param {CompressedAccountWithMerkleContext[]} inputCompressedAccounts - Input compressed accounts
+ * @param {CompressedAccount[]} outputCompressedAccounts - Output compressed accounts
+ * @param {NewAddressParams[]} newAddressesParams - New address parameters
+ * @param {CompressedProofWithContext} proof - Compressed proof with context
+ * @returns {Object} Packed data including merkle contexts and remaining accounts
+ */
 export const packWithInput = (
   inputCompressedAccounts: CompressedAccountWithMerkleContext[],
   outputCompressedAccounts: CompressedAccount[],
   newAddressesParams: NewAddressParams[],
   proof: CompressedProofWithContext
 ) => {
+  const { addressTree, addressQueue } = defaultTestStateTreeAccounts();
   const {
     remainingAccounts: _remainingAccounts,
     packedInputCompressedAccounts,
@@ -58,13 +80,28 @@ export const packWithInput = (
     newAddressesParams,
     _remainingAccounts
   );
-  let {
-    addressMerkleTreeAccountIndex,
-    addressMerkleTreeRootIndex,
-    addressQueueAccountIndex,
-  } = newAddressParamsPacked[0];
 
-  const merkleContext = packedInputCompressedAccounts[0].merkleContext;
+  let addressMerkleTreeAccountIndex: number,
+    addressMerkleTreeRootIndex: number,
+    addressQueueAccountIndex: number;
+
+  try {
+    ({
+      addressMerkleTreeAccountIndex,
+      addressMerkleTreeRootIndex,
+      addressQueueAccountIndex,
+    } = newAddressParamsPacked[0]);
+  } catch {
+    addressMerkleTreeRootIndex = packedInputCompressedAccounts[0].rootIndex;
+    addressMerkleTreeAccountIndex = getIndexOrAdd(
+      remainingAccounts,
+      addressTree
+    );
+    addressQueueAccountIndex = getIndexOrAdd(remainingAccounts, addressQueue);
+  }
+  const merkleContext: PackedMerkleContext =
+    packedInputCompressedAccounts[0].merkleContext;
+
   return {
     addressMerkleContext: {
       addressMerkleTreePubkeyIndex: addressMerkleTreeAccountIndex,
@@ -76,6 +113,13 @@ export const packWithInput = (
   };
 };
 
+/**
+ * Packs new compressed accounts with output and new address parameters.
+ * @param {CompressedAccount[]} outputCompressedAccounts - Output compressed accounts
+ * @param {NewAddressParams[]} newAddressesParams - New address parameters
+ * @param {CompressedProofWithContext} proof - Compressed proof with context
+ * @returns {Object} Packed data including merkle contexts and remaining accounts
+ */
 export const packNew = (
   outputCompressedAccounts: CompressedAccount[],
   newAddressesParams: NewAddressParams[],
@@ -109,14 +153,16 @@ export const packNew = (
     },
     addressMerkleTreeRootIndex,
     merkleContext,
-    remainingAccounts: remainingAccounts.map((account) => ({
-      pubkey: account,
-      isSigner: false,
-      isWritable: true,
-    })),
+    remainingAccounts,
   };
 };
 
+/**
+ * Gets new address parameters from an address seed and proof.
+ * @param {Uint8Array} addressSeed - The address seed
+ * @param {CompressedProofWithContext} proof - Compressed proof with context
+ * @returns {NewAddressParams} New address parameters
+ */
 export const getNewAddressParams = (
   addressSeed: Uint8Array,
   proof: CompressedProofWithContext
@@ -130,6 +176,13 @@ export const getNewAddressParams = (
   return addressParams;
 };
 
+/**
+ * Builds, signs, and sends a transaction with the given instructions.
+ * @param {TransactionInstruction[]} instructions - Array of transaction instructions
+ * @param {Keypair} payer - The payer's keypair
+ * @param {Rpc} connection - The RPC connection
+ * @returns {Promise<string>} The transaction signature
+ */
 export const buildSignAndSendTransaction = async (
   instructions: TransactionInstruction[],
   payer: Keypair,
@@ -142,4 +195,17 @@ export const buildSignAndSendTransaction = async (
     commitment: "confirmed",
   });
   return txSignature;
+};
+
+/**
+ * Formats an array of PublicKeys into an array of account metas.
+ * @param {PublicKey[]} remainingAccounts - Array of PublicKeys to format
+ * @returns {Array<{pubkey: PublicKey, isSigner: boolean, isWritable: boolean}>} Formatted account metas
+ */
+export const formatRemainingAccounts = (remainingAccounts: PublicKey[]) => {
+  return remainingAccounts.map((account) => ({
+    pubkey: account,
+    isSigner: false,
+    isWritable: true,
+  }));
 };
