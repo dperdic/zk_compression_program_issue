@@ -60,11 +60,7 @@ async fn test() {
         address_merkle_tree_pubkey: env.address_merkle_tree_pubkey,
         address_queue_pubkey: env.address_merkle_tree_queue_pubkey,
     };
-    let address_seed = derive_address_seed(
-        &[b"counter", payer.pubkey().as_ref()],
-        &zk_counter::ID,
-        &address_merkle_context,
-    );
+    let address_seed = derive_address_seed(&[b"counter", payer.pubkey().as_ref()], &zk_counter::ID);
 
     let address = derive_address(&address_seed, &address_merkle_context);
 

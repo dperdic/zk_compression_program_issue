@@ -1,7 +1,6 @@
 # Compressed Program Template
 
-This repo is based on the ZK Compression template initialized via `light init testprogram
-`. It adds TS based tests to help the reader understand how to write tests for a Light program in Anchor.
+This repo is based on the ZK Compression template initialized via `light init <PROGRAM_NAME>`. It adds TS based tests to help the reader understand how to write tests for a Light program in Anchor.
 
 ## Prerequisites
 
@@ -57,7 +56,9 @@ For more granular control, you can use these scripts:
 
 ## Important Notes
 
-- The Light cargo dependencies in `Cargo.toml` are pinned to revision `ac34e7223423c2e1022554db30c7748714962cbb` for stability.
+- The Light cargo dependencies in `Cargo.toml` are pinned to revision `363624c04585243ef049f7aecc59bfa90bfd7f6a` for stability. This revision:
+  - Has support for non-compressed accounts in a Light program
+  - Includes fixes for compressed proof not building properly in the Anchor IDL
 
 ## Troubleshooting
 
