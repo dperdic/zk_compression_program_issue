@@ -79,8 +79,7 @@ describe("ZkCounter", () => {
   before(async () => {
     addressSeed = deriveAddressSeed(
       [Buffer.from("counter"), payer.toBuffer()],
-      program.programId,
-      addressTree
+      program.programId
     );
 
     address = await deriveAddress(addressSeed, addressTree);
