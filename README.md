@@ -10,14 +10,15 @@ This repo is based on the ZK Compression template initialized via `light init te
 
 ## Setup
 
-1. Generate a new Anchor key:
+1. Run `yarn install`.
+2. Generate a new Anchor key:
    ```
    anchor keys list
    ```
 
-2. Replace the generated key in `lib.rs` and `Anchor.toml`.
+3. Replace the generated key in `lib.rs` and `Anchor.toml`.
 
-3. Build the program:
+4. Build the program:
    ```
    anchor build
    ```
