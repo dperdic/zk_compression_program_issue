@@ -11,6 +11,7 @@ import {
   defaultTestStateTreeAccounts,
   deriveAddress,
   PackedMerkleContext,
+  CompressedAccountWithMerkleContext,
 } from "@lightprotocol/stateless.js";
 import dotenv from "dotenv";
 import {
@@ -23,8 +24,10 @@ import { ZkCounterStruct } from "./helpers/types";
 import {
   buildSignAndSendTransaction,
   deriveAddressSeed,
+  formatRemainingAccounts,
   getNewAddressParams,
   packNew,
+  packWithInput,
 } from "./helpers/compression";
 import * as borsh from "borsh";
 import { expect } from "chai";
@@ -66,18 +69,24 @@ describe("ZkCounter", () => {
     addressQueuePubkeyIndex: number;
   };
   let addressMerkleTreeRootIndex: number;
-  let remainingAccounts: AccountMeta[];
+  let remainingAccounts: PublicKey[];
 
-  it("Should create a new account", async () => {
-    const tempPayer = (provider.wallet as any).payer.publicKey;
-    const addressSeed = deriveAddressSeed(
-      [Buffer.from("counter"), tempPayer.toBuffer()],
+  const payer = (provider.wallet as any).payer.publicKey;
+
+  let addressSeed: Uint8Array;
+  let address: PublicKey;
+
+  before(async () => {
+    addressSeed = deriveAddressSeed(
+      [Buffer.from("counter"), payer.toBuffer()],
       program.programId,
       addressTree
     );
 
-    const address = await deriveAddress(addressSeed, addressTree);
+    address = await deriveAddress(addressSeed, addressTree);
+  });
 
+  it("Should create a new account", async () => {
     const proof = await connection.getValidityProof(undefined, [
       bn(address.toBytes()),
     ]);
@@ -121,7 +130,7 @@ describe("ZkCounter", () => {
           program.programId
         )[0],
       })
-      .remainingAccounts(remainingAccounts)
+      .remainingAccounts(formatRemainingAccounts(remainingAccounts))
       .instruction();
 
     const txSignature = await buildSignAndSendTransaction(
@@ -165,10 +174,17 @@ describe("ZkCounter", () => {
       undefined
     );
 
+    ({
+      merkleContext,
+      addressMerkleContext,
+      remainingAccounts,
+      addressMerkleTreeRootIndex,
+    } = packWithInput([compressedAccount], [], [], proof));
+
     const parameters: ZkCounterStruct<"increment"> = {
       inputs: [compressedAccount.data.data],
       proof: proof.compressedProof,
-      merkleContext: merkleContext,
+      merkleContext,
       merkleTreeRootIndex: proof.rootIndices[0],
       addressMerkleContext,
       addressMerkleTreeRootIndex,
@@ -190,7 +206,7 @@ describe("ZkCounter", () => {
           program.programId
         )[0],
       })
-      .remainingAccounts(remainingAccounts)
+      .remainingAccounts(formatRemainingAccounts(remainingAccounts))
       .instruction();
 
     const txSignature = await buildSignAndSendTransaction(
@@ -217,5 +233,67 @@ describe("ZkCounter", () => {
     };
     const decoded: any = borsh.deserialize(CounterSchema, counterAccount.data);
     expect(decoded.counter).to.eq(BigInt(1));
+  });
+
+  it("Should be able to delete the account", async () => {
+    const accounts = await connection.getCompressedAccountsByOwner(
+      program.programId
+    );
+
+    const compressedAccount = accounts.items[0];
+
+    const proof = await connection.getValidityProof(
+      [bn(compressedAccount.hash)],
+      undefined
+    );
+
+    ({
+      merkleContext,
+      addressMerkleContext,
+      remainingAccounts,
+      addressMerkleTreeRootIndex,
+    } = packWithInput([compressedAccount], [], [], proof));
+
+    const parameters: ZkCounterStruct<"delete"> = {
+      inputs: [compressedAccount.data.data],
+      proof: proof.compressedProof,
+      merkleContext,
+      merkleTreeRootIndex: proof.rootIndices[0],
+      addressMerkleContext,
+      addressMerkleTreeRootIndex,
+    };
+
+    const instructions = await program.methods
+      .delete(...(Object.values(parameters) as any))
+      .accounts({
+        signer: provider.wallet.publicKey,
+        selfProgram: program.programId,
+        lightSystemProgram: LightSystemProgram.programId,
+        accountCompressionAuthority,
+        noopProgram,
+        accountCompressionProgram,
+        registeredProgramPda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+        cpiSigner: PublicKey.findProgramAddressSync(
+          [Buffer.from("cpi_authority")],
+          program.programId
+        )[0],
+      })
+      .remainingAccounts(formatRemainingAccounts(remainingAccounts))
+      .instruction();
+
+    const txSignature = await buildSignAndSendTransaction(
+      [modifyComputeUnits, addPriorityFee, instructions],
+      deployer,
+      connection
+    );
+    console.log("Your transaction signature", txSignature);
+  });
+
+  it("Should not be able to find the deleted account", async () => {
+    const accounts = await connection.getCompressedAccountsByOwner(
+      program.programId
+    );
+    expect(accounts.items.length).to.eq(0);
   });
 });
