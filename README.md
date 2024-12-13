@@ -10,7 +10,7 @@ This repo is based on the [ZK Compression template](https://github.com/mjkid221/
 ## Setup
 
 1. Run `avm use`
-2. Run `yarn`.
+2. Run `yarn`
 3. Run `yarn build`
 
 ## Testing
