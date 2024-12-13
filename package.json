@@ -4,11 +4,13 @@
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
     "test:tokio": "cargo test-sbf -- --nocapture",
-    "test:ts": "anchor test",
     "depl": "anchor deploy --provider.cluster http://localhost:8899",
     "test:ts:no-setup": "anchor test --provider.cluster http://localhost:8899 --skip-deploy --skip-local-validator --skip-build",
-    "lightv": "light test-validator",
-    "test:ts:full-setup": "yarn lightv && yarn depl && yarn test:ts:no-setup"
+    "test:ts:full-setup": "yarn light-start && yarn depl && yarn test:ts:no-setup",
+    "light-start": "light test-validator",
+    "light-kill": "light test-validator --stop",
+    "copy-keypairs": "mkdir -p target/deploy && cp test-keys/zk_counter-keypair.json target/deploy/zk_counter-keypair.json",
+    "test:ts": "yarn light-start && yarn copy-keypairs && anchor test --skip-local-validator && yarn light-kill"
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.29.0",
