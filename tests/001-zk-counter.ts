@@ -234,6 +234,86 @@ describe("ZkCounter", () => {
     expect(decoded.counter).to.eq(BigInt(1));
   });
 
+  it("Should init dummy and increment the counter", async () => {
+    const accounts = await connection.getCompressedAccountsByOwner(
+      program.programId
+    );
+
+    const compressedAccount = accounts.items[0];
+
+    const dummyKeyPair = new Keypair();
+
+    const dummyAddressSeed = deriveAddressSeed(
+      [Buffer.from("ds"), dummyKeyPair.publicKey.toBuffer(), Buffer.from("1")],
+      program.programId
+    );
+
+    const dummyAddress = await deriveAddress(dummyAddressSeed, addressTree);
+
+    const proof = await connection.getValidityProof(
+      [bn(compressedAccount.hash)],
+      [bn(dummyAddress.toBytes())]
+    );
+
+    const newAddressParams = getNewAddressParams(dummyAddressSeed, proof);
+
+    const outputCompressedAccounts =
+      LightSystemProgram.createNewAddressOutputState(
+        Array.from(dummyAddress.toBytes()),
+        program.programId
+      );
+
+    ({
+      merkleContext,
+      addressMerkleContext,
+      remainingAccounts,
+      addressMerkleTreeRootIndex,
+    } = packWithInput(
+      [compressedAccount],
+      outputCompressedAccounts,
+      [newAddressParams],
+      proof
+    ));
+
+    const parameters: ZkCounterStruct<"initAndIncrement"> = {
+      inputs: [compressedAccount.data.data],
+      proof: proof.compressedProof,
+      merkleContext,
+      merkleTreeRootIndex: proof.rootIndices[0],
+      addressMerkleContext,
+      addressMerkleTreeRootIndex,
+      subscriptionId: "1",
+    };
+
+    const instructions = await program.methods
+      .initAndIncrement(...(Object.values(parameters) as any))
+      .accounts({
+        signer: provider.wallet.publicKey,
+        selfProgram: program.programId,
+        lightSystemProgram: LightSystemProgram.programId,
+        accountCompressionAuthority,
+        noopProgram,
+        accountCompressionProgram,
+        registeredProgramPda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+        cpiSigner: PublicKey.findProgramAddressSync(
+          [Buffer.from("cpi_authority")],
+          program.programId
+        )[0],
+        dummyAccount: dummyKeyPair.publicKey,
+      })
+      .remainingAccounts(formatRemainingAccounts(remainingAccounts))
+      .instruction();
+
+    const txSignature = await buildSignAndSendTransaction(
+      [modifyComputeUnits, addPriorityFee, instructions],
+      deployer,
+      connection
+    );
+
+    console.log("Your transaction signature", txSignature);
+  });
+
   it("Should be able to delete the account", async () => {
     const accounts = await connection.getCompressedAccountsByOwner(
       program.programId
