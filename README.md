@@ -27,6 +27,8 @@ The issue occurs while trying to init a new light account and update an existing
 
 The function in this example is called `init_and_increment`.
 
+It is invoked in `001-zk-counter.ts` in the `Should init dummy and increment the counter` test.
+
 The following error is logged.
 
 ```txt
