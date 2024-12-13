@@ -1,4 +1,4 @@
-# Compressed Program Template
+# Compressed Program Issue Reproduction
 
 This repo is based on the [ZK Compression template](https://github.com/mjkid221/zk_compression_program) by mjkdi221 and initialized via `light init <PROGRAM_NAME>`. It adds TS based tests to help the reader understand how to write tests for a Light program in Anchor.
 
