@@ -1,6 +1,7 @@
 {
   "license": "ISC",
   "scripts": {
+    "build": "yarn copy-keypairs && anchor build",
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
     "test:tokio": "cargo test-sbf -- --nocapture",
@@ -15,9 +16,9 @@
   "dependencies": {
     "@coral-xyz/anchor": "0.29.0",
     "@lightprotocol/hasher.rs": "^0.2.0",
-    "@lightprotocol/stateless.js": "^0.13.0",
+    "@lightprotocol/stateless.js": "^0.16.0",
     "@oclif/core": "^3.26.2",
-    "@solana/web3.js": "^1.95.3",
+    "@solana/web3.js": "^1.95.8",
     "borsh": "2.0.0"
   },
   "devDependencies": {

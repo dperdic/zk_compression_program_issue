@@ -248,7 +248,7 @@ describe("ZkCounter", () => {
       program.programId
     );
 
-    const dummyAddress = await deriveAddress(dummyAddressSeed, addressTree);
+    const dummyAddress = deriveAddress(dummyAddressSeed, addressTree);
 
     const proof = await connection.getValidityProof(
       [bn(compressedAccount.hash)],

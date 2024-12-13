@@ -6,8 +6,6 @@ use light_sdk::{
 
 declare_id!("pst8edPuyRh6MEdhGJPZGQRQpUcHS6V3fnwMFLcFxBZ");
 
-const PDA_DUMMY_SEED: &[u8; 2] = b"ds";
-
 #[light_program]
 #[program]
 pub mod zk_counter {
@@ -115,7 +113,7 @@ pub struct InitAndIncrement<'info> {
 
     #[light_account(
         init,
-        seeds=[PDA_DUMMY_SEED, dummy_account.key().as_ref(), subscription_id.as_ref()],
+        seeds=[b"ds", dummy_account.key().as_ref(), subscription_id.as_ref()],
     )]
     pub dummy: LightAccount<DummyStruct>,
 }

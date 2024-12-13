@@ -42,17 +42,17 @@
   resolved "https://registry.yarnpkg.com/@lightprotocol/hasher.rs/-/hasher.rs-0.2.0.tgz#a62da730970e99d830e030c27bdf47c879fb2e7b"
   integrity sha512-ttKBiKNmq0xJbKzT02r7KJH9Pmigu/8C2LJFCsz0aQNh6Xh3nH2by6RwxHTImE/N4UyAVb6ii0zAJl0DnZo/0w==
 
-"@lightprotocol/stateless.js@^0.13.0":
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/@lightprotocol/stateless.js/-/stateless.js-0.13.0.tgz#7a25509587e623e4ff36cb2ce413155514a90eed"
-  integrity sha512-eIkvowkYxuOWCjCvCodkSvuIvMV2arzLlbyxxbk98PMz4MniCAB4olXD05ejWPTKvyh3vnQvjA8QIvd7xgr0Dg==
+"@lightprotocol/stateless.js@^0.16.0":
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/@lightprotocol/stateless.js/-/stateless.js-0.16.0.tgz#2c375353cc114985aa9f69a9573c5afd88b7d035"
+  integrity sha512-HX4i/OhhYEY6+FKGpCSAL6/LT+0Lge4Gz+mckgZXSTR9wnk3o6yVoQxAh6/SetRSWP/9kamt2GUPnoZOalIjPQ==
   dependencies:
     "@coral-xyz/anchor" "0.29.0"
-    "@noble/hashes" "^1.5.0"
-    "@solana/web3.js" "^1.95.3"
-    buffer "^6.0.3"
-    superstruct "^2.0.2"
-    tweetnacl "^1.0.3"
+    "@noble/hashes" "1.5.0"
+    "@solana/web3.js" "1.95.3"
+    buffer "6.0.3"
+    superstruct "2.0.2"
+    tweetnacl "1.0.3"
 
 "@noble/curves@^1.4.2":
   version "1.6.0"
@@ -61,7 +61,7 @@
   dependencies:
     "@noble/hashes" "1.5.0"
 
-"@noble/hashes@1.5.0", "@noble/hashes@^1.3.1", "@noble/hashes@^1.4.0", "@noble/hashes@^1.5.0":
+"@noble/hashes@1.5.0", "@noble/hashes@^1.3.1", "@noble/hashes@^1.4.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.5.0.tgz#abadc5ca20332db2b1b2aa3e496e9af1213570b0"
   integrity sha512-1j6kQFb7QRru7eKN3ZDvRcP13rugwdxZqCjbiAVZfIJwgj2A65UmT4TgARXGlXgnRkORLTDTrO19ZErt7+QXgA==
@@ -128,7 +128,7 @@
   dependencies:
     buffer "~6.0.3"
 
-"@solana/web3.js@^1.68.0":
+"@solana/web3.js@1.95.3", "@solana/web3.js@^1.68.0":
   version "1.95.3"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.95.3.tgz#70b5f4d76823f56b5af6403da51125fffeb65ff3"
   integrity sha512-O6rPUN0w2fkNqx/Z3QJMB9L225Ex10PRDH8bTaIUPZXMPV0QP8ZpPvjQnXK+upUczlRgzHzd6SjKIha1p+I6og==
@@ -149,10 +149,10 @@
     rpc-websockets "^9.0.2"
     superstruct "^2.0.2"
 
-"@solana/web3.js@^1.95.3":
-  version "1.95.4"
-  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.95.4.tgz#771603f60d75cf7556ad867e1fd2efae32f9ad09"
-  integrity sha512-sdewnNEA42ZSMxqkzdwEWi6fDgzwtJHaQa5ndUGEJYtoOnM6X5cvPmjoTUp7/k7bRrVAxfBgDnvQQHD6yhlLYw==
+"@solana/web3.js@^1.95.8":
+  version "1.95.8"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.95.8.tgz#2d49abda23f7a79a3cc499ab6680f7be11786ee1"
+  integrity sha512-sBHzNh7dHMrmNS5xPD1d0Xa2QffW/RXaxu/OysRXBfwTp+LYqGGmMtCYYwrHPrN5rjAmJCsQRNAwv4FM0t3B6g==
   dependencies:
     "@babel/runtime" "^7.25.0"
     "@noble/curves" "^1.4.2"
@@ -1394,15 +1394,15 @@ strip-json-comments@3.1.1:
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-3.1.1.tgz#31f1281b3832630434831c310c01cccda8cbe006"
   integrity sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
 
+superstruct@2.0.2, superstruct@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-2.0.2.tgz#3f6d32fbdc11c357deff127d591a39b996300c54"
+  integrity sha512-uV+TFRZdXsqXTL2pRvujROjdZQ4RAlBUS5BTh9IGm+jTqQntYThciG/qu57Gs69yjnVUSqdxF9YLmSnpupBW9A==
+
 superstruct@^0.15.4:
   version "0.15.5"
   resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-0.15.5.tgz#0f0a8d3ce31313f0d84c6096cd4fa1bfdedc9dab"
   integrity sha512-4AOeU+P5UuE/4nOUkmcQdW5y7i9ndt1cQd/3iUe+LTz3RxESf/W/5lg4B74HbDMMv8PHnPnGCQFH45kBcrQYoQ==
-
-superstruct@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-2.0.2.tgz#3f6d32fbdc11c357deff127d591a39b996300c54"
-  integrity sha512-uV+TFRZdXsqXTL2pRvujROjdZQ4RAlBUS5BTh9IGm+jTqQntYThciG/qu57Gs69yjnVUSqdxF9YLmSnpupBW9A==
 
 supports-color@8.1.1, supports-color@^8.1.1:
   version "8.1.1"
@@ -1491,7 +1491,7 @@ tslib@^2.0.3, tslib@^2.4.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.7.0.tgz#d9b40c5c40ab59e8738f297df3087bf1a2690c01"
   integrity sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==
 
-tweetnacl@^1.0.3:
+tweetnacl@1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
   integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
